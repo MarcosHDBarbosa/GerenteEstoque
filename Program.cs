@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GerenteEstoque.Controller;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,25 +17,121 @@ namespace GerenteEstoque
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
 
-      DataBase.DataBase.Insert(
-        new Model.Fabricante("Pepsi")
-        );
+      Controller.Controller.Create(new Model.Categoria());
+      Controller.Controller.Create(new Model.Fabricante());
+      Controller.Controller.Create(new Model.Produto());
+      Controller.Controller.Create(new RelationshipTable(new Model.Produto(), new Model.Categoria()));
 
-      List<DataBase.Table> fabricante = DataBase.DataBase.Read(
-        typeof(Model.Fabricante),
-        new List<DataBase.Field>(){
-          }
-        );
+      Controller.Controller.Insert(new Model.Categoria("Menino"));
+      Controller.Controller.Insert(new Model.Categoria("Menina"));
+      Controller.Controller.Insert(new Model.Categoria("Shorte"));
+      Controller.Controller.Insert(new Model.Categoria("Camisa"));
+      Controller.Controller.Insert(new Model.Categoria("Vestido"));
+      Controller.Controller.Insert(new Model.Categoria("Sapato"));
+      Controller.Controller.Insert(new Model.Categoria("Rasteirinha"));
 
-      List<DataBase.Table> Categoria = DataBase.DataBase.Read(
+      Controller.Controller.Insert(new Model.Fabricante("Klin"));
+      Controller.Controller.Insert(new Model.Fabricante("Kyly"));
+      Controller.Controller.Insert(new Model.Fabricante("Kiko"));
+
+      List<Controller.Table> categoria = Controller.Controller.Read(
         typeof(Model.Categoria),
-        new List<DataBase.Field>(){
+        new List<Controller.Field>()
+        {
+        }
+        );
+
+      List<Controller.Table> fabricante = Controller.Controller.Read(
+        typeof(Model.Fabricante),
+        new List<Controller.Field>()
+        {
+        }
+        );
+
+      categoria = Controller.Controller.Read(
+        typeof(Model.Categoria),
+        new List<Controller.Field>()
+        {
+        }
+        );
+
+      Controller.Controller.Insert(
+        new Model.Produto(
+            "Shortinho",
+            "M",
+            "Shorte tamanho M",
+            (Model.Fabricante)fabricante[1],
+            new List<Model.Categoria>()
+            {
+              (Model.Categoria)categoria[0],
+              (Model.Categoria)categoria[2]
+            }
+
+          )
+        );
+
+      List<Controller.Table> produto = Controller.Controller.Read(
+        typeof(Model.Produto),
+        new List<Controller.Field>()
+        {
+        }
+        );
+
+      Console.WriteLine(
+        ((Model.Produto)produto[0]).Nome.Value + "=" +
+        ((Model.Produto)produto[0]).Fabricante.Value + "=" +
+        ((Model.Produto)produto[0]).ListCategoria.ListTables().Count
+        );
+
+      //Console.WriteLine(fabricante+""+ categoria + ""+ produto);
+      ((Model.Produto)produto[0]).Nome.Value = "Ervilha";
+      ((Model.Produto)produto[0]).Fabricante.Value = fabricante[2];
+      //((Model.Produto)produto[0]).ListCategoria.RemoveTable(categoria[0]);
+      ((Model.Produto)produto[0]).ListCategoria.AddTable(categoria[1]);
+
+      Console.WriteLine(
+        ((Model.Produto)produto[0]).Nome.Value + "=" +
+        ((Model.Produto)produto[0]).Fabricante.Value + "=" +
+        ((Model.Produto)produto[0]).ListCategoria.ListTables().Count
+        );
+
+
+      Controller.Controller.Insert(produto[0]);
+      produto = Controller.Controller.Read(
+        typeof(Model.Produto),
+        new List<Controller.Field>()
+        {
+        }
+        );
+
+      List<RelationshipTable> tb = Controller.Controller.ReadRelationshipTables("ProdutoAndCategoria", typeof(Model.Produto), typeof(Model.Categoria), new List<Field>());
+
+      Console.WriteLine(fabricante + ""+ categoria + ""+ produto + ""+ tb);
+
+      Controller.Controller.Delete(produto[0]);
+
+      produto = Controller.Controller.Read(
+        typeof(Model.Produto),
+        new List<Controller.Field>()
+        {
+        }
+        );
+
+      Console.WriteLine(produto);
+
+      tb = Controller.Controller.ReadRelationshipTables("ProdutoAndCategoria", typeof(Model.Produto), typeof(Model.Categoria), new List<Field>());
+
+      Console.WriteLine(tb);
+      /*
+      List<Controller.Table> Categoria = Controller.DataBase.Read(
+        typeof(Model.Categoria),
+        new List<Controller.Field>(){
           }
         );
 
       Console.WriteLine(fabricante.Count + "-" + Categoria.Count);
 
-      DataBase.DataBase.Insert(
+      Controller.DataBase.Insert(
         new Model.Produto(
           "Refrigerante Mate Couro Vidro 250ml",
           "250ml",
@@ -47,20 +144,20 @@ namespace GerenteEstoque
           )
         );
 
-      List<DataBase.Table> Procuto = DataBase.DataBase.Read(
+      List<Controller.Table> Procuto = Controller.DataBase.Read(
         typeof(Model.Produto),
-        new List<DataBase.Field>(){
+        new List<Controller.Field>(){
           }
         );
 
       Console.WriteLine(Procuto.Count);
 
-      List<DataBase.RelationshipTable> table =
-        DataBase.DataBase.ReadRelationshipTables(
+      List<Controller.RelationshipTable> table =
+        Controller.DataBase.ReadRelationshipTables(
           "RelationshipTable_ProdutoAndCategoria",
           typeof(Model.Produto),
           typeof(Model.Categoria),
-          new List<DataBase.Field>()
+          new List<Controller.Field>()
           );
       
       Console.WriteLine(table);
@@ -68,23 +165,23 @@ namespace GerenteEstoque
       //((Model.Produto)Procuto[0]).AddCategoria((Model.Categoria)Categoria[5]);
 
       Console.WriteLine(
-        DataBase.DataBase.Delete(
+        Controller.DataBase.Delete(
           Procuto[0]
           )
         );
 
-      table =DataBase.DataBase.ReadRelationshipTables(
+      table = Controller.DataBase.ReadRelationshipTables(
           "RelationshipTable_ProdutoAndCategoria",
           typeof(Model.Produto),
           typeof(Model.Categoria),
-          new List<DataBase.Field>()
+          new List<Controller.Field>()
         );
 
       Console.WriteLine(table);
 
-      Procuto = DataBase.DataBase.Read(
+      Procuto = Controller.DataBase.Read(
         typeof(Model.Produto),
-        new List<DataBase.Field>(){}
+        new List<Controller.Field>(){}
         );
 
       Console.WriteLine(Procuto.Count);
@@ -103,9 +200,9 @@ namespace GerenteEstoque
           }
         );
 
-      Console.WriteLine(tabela.Count);*/
+      Console.WriteLine(tabela.Count);
 
-      Application.Run(new Form1());
+      Application.Run(new Form1(Procuto[0]));*/
     }
   }
 }

@@ -6,27 +6,22 @@ using System.Threading.Tasks;
 
 namespace GerenteEstoque.Model
 {
-  class Fabricante : DataBase.Table
+  class Fabricante : Controller.Table
   {
-    private string nome = "INDEFINIDO";
+    public Controller.StringField Nome { get; } =
+      new Controller.StringField("Nome", 50);
 
     // Inicializa a instancia com os atributos padrão
     public Fabricante() {}
 
-    // Função responsavel por adicionar fields relacionadas aos valores percistentes
     public Fabricante(string nome) : base()
     {
-      this.nome = nome;
+      this.Nome.Value = nome;
     }
 
-    // Função responsavel por adicionar fields relacionadas aos valores persistentes
-    protected override void ListFields()
+    public override string ToString()
     {
-      this.AddField("Nome", GetNome, SetNome);
+      return Convert.ToString(this.Nome.Value);
     }
-
-    // Get and Set do valor Nome.
-    public object GetNome() => this.nome;
-    public void SetNome(object nome) { this.nome = Convert.ToString(nome); }
   }
 }
